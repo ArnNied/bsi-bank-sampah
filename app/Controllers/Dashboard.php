@@ -47,7 +47,7 @@ class Dashboard extends BaseController
         $penarikan_list = $this->penarikan_model->where('id_nasabah', $this->logged_in_user['id'])->findAll(5);
 
         $this->kategori_model->orderBy('terakhir_diperbarui', 'DESC');
-        $kategori_list = $this->kategori_model->findAll(5);
+        $kategori_list = $this->kategori_model->findAll(10);
 
         $statistik = [];
 
@@ -92,11 +92,10 @@ class Dashboard extends BaseController
         $this->penarikan_model->join('nasabah', 'nasabah.id = penarikan.id_nasabah');
         $this->penarikan_model->orderBy('tanggal_penarikan', 'DESC');
         $this->penarikan_model->where('id_teller', $this->logged_in_user['id']);
-        $this->penarikan_model->where('id_teller', $this->logged_in_user['id']);
         $penarikan_list = $this->penarikan_model->findAll(5);
 
         $this->kategori_model->orderBy('terakhir_diperbarui', 'DESC');
-        $kategori_list = $this->kategori_model->findAll(5);
+        $kategori_list = $this->kategori_model->findAll(10);
 
         $statistik = [];
 
@@ -142,7 +141,7 @@ class Dashboard extends BaseController
         $this->penarikan_model->orderBy('tanggal_penarikan', 'DESC');
         $penarikan_list = $this->penarikan_model->findAll(5);
 
-        $kategori_list = $this->kategori_model->findAll(5);
+        $kategori_list = $this->kategori_model->findAll(10);
 
         $statistik = [];
 

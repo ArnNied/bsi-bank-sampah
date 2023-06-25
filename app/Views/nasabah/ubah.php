@@ -57,7 +57,7 @@ $user = $session->get('user');
             </form>
         </div>
     </div>
-    <div class="card">
+    <div class="card mb-3">
         <div class="card-body">
             <h2 class="card-title text-center py-4">
                 Ganti Password
@@ -107,7 +107,7 @@ $user = $session->get('user');
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <form action="<?= base_url('nasasbah/hapus/' . $teller['id']) ?>" method="POST">
+                    <form action="<?= base_url('nasasbah/hapus/' . $nasabah['id']) ?>" method="POST">
                         <button class="btn btn-danger w-100">Ya, Hapus Akun Ini</button>
                     </form>
                 </div>

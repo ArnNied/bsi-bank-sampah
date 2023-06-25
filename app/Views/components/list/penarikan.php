@@ -1,6 +1,5 @@
 <?php
 
-helper('number');
 $session = session();
 $role = $session->get('role');
 
@@ -15,7 +14,7 @@ $role = $session->get('role');
     </h3>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table">
+            <table class="table table-hover table-striped">
                 <thead>
                     <tr>
                         <th scope="col">#</th>

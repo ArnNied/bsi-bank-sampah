@@ -12,7 +12,7 @@ class Teller extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
-        $this->teller_model->orderBy('nama_lengkap', 'DESC');
+        $this->teller_model->orderBy('nama_lengkap', 'ASC');
         $teller_list = $this->teller_model->findAll();
 
         $data = [
@@ -42,6 +42,7 @@ class Teller extends BaseController
             $password = $this->request->getPost('password');
             $konfirmasi_password = $this->request->getPost('konfirmasi_password');
             $nama_lengkap = $this->request->getPost('nama_lengkap');
+            $alamat = $this->request->getPost('alamat');
             $email = $this->request->getPost('email');
             $nomor_telepon = $this->request->getPost('nomor_telepon');
 
@@ -50,6 +51,7 @@ class Teller extends BaseController
                     'username' => $username,
                     'password' => $password,
                     'nama_lengkap' => $nama_lengkap,
+                    'alamat' => $alamat,
                     'email' => $email,
                     'nomor_telepon' => $nomor_telepon,
                 ],
@@ -58,6 +60,7 @@ class Teller extends BaseController
                         'username',
                         'password',
                         'nama_lengkap',
+                        'alamat',
                         'email',
                         'nomor_telepon',
                     ]
@@ -86,6 +89,7 @@ class Teller extends BaseController
                 'username' => $username,
                 'password' => $password,
                 'nama_lengkap' => $nama_lengkap,
+                'alamat' => $alamat,
                 'email' => $email,
                 'nomor_telepon' => $nomor_telepon,
                 'is_active' => 1,
@@ -140,6 +144,7 @@ class Teller extends BaseController
             // ambil data dari form
             $username = $this->request->getPost('username');
             $nama_lengkap = $this->request->getPost('nama_lengkap');
+            $alamat = $this->request->getPost('alamat');
             $email = $this->request->getPost('email');
             $nomor_telepon = $this->request->getPost('nomor_telepon');
             $is_active = $this->user_role == 'admin' ? $this->request->getPost('is_active') : $teller['is_active'];
@@ -150,6 +155,7 @@ class Teller extends BaseController
                     'id' => $id,
                     'username' => $username,
                     'nama_lengkap' => $nama_lengkap,
+                    'alamat' => $alamat,
                     'email' => $email,
                     'nomor_telepon' => $nomor_telepon,
                 ],
@@ -158,6 +164,7 @@ class Teller extends BaseController
                         'id',
                         'username',
                         'nama_lengkap',
+                        'alamat',
                         'email',
                         'nomor_telepon',
                     ]
@@ -175,6 +182,7 @@ class Teller extends BaseController
                 'id' => $id,
                 'username' => $username,
                 'nama_lengkap' => $nama_lengkap,
+                'alamat' => $alamat,
                 'email' => $email,
                 'nomor_telepon' => $nomor_telepon,
                 'is_active' => $is_active == 'on' || $is_active ? 1 : 0,

@@ -1,6 +1,5 @@
 <?php
 
-helper('number');
 $session = session();
 $role = $session->get('role');
 
@@ -15,7 +14,7 @@ $role = $session->get('role');
     </h3>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table">
+            <table class="table table-hover table-striped">
                 <thead>
                     <tr>
                         <th scope="col">#</th>
@@ -31,6 +30,9 @@ $role = $session->get('role');
                         <th scope="col">Tanggal Daftar</th>
                         <th scope="col">Terakhir Login</th>
                         <th scope="col">Is Active</th>
+                        <?php if (in_array($role, ['admin', 'teller'])) : ?>
+                            <th scope="col">Aksi</th>
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,6 +51,17 @@ $role = $session->get('role');
                             <td><?= $nasabah['tanggal_daftar']; ?></td>
                             <td><?= $nasabah['terakhir_login']; ?></td>
                             <td><?= $nasabah['is_active'] ? 'Aktif' : 'Nonaktif'; ?></td>
+                            <?php if (in_array($role, ['admin', 'teller'])) : ?>
+                                <td>
+                                    <a href="<?= base_url('nasabah/ubah/') . $nasabah['id']; ?>" class="btn btn-warning">Ubah</a>
+                                    <?php if ($role == 'admin') : ?>
+
+                                        <form method="POST" action="<?= base_url('nasabah/hapus/') . $nasabah['id']; ?>" style="display: inline">
+                                            <button class="btn btn-outline-danger" onclick="return confirm('Kamu yakin akan menghapus <?= $title . ' ' . $nasabah['nama_lengkap']; ?> ?');">Hapus</button>
+                                        </form>
+                                    <?php endif; ?>
+                                </td>
+                            <?php endif; ?>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

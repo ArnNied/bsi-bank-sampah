@@ -14,7 +14,7 @@ $role = $session->get('role');
     </h3>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table">
+            <table class="table table-hover table-striped">
                 <thead>
                     <tr>
                         <th scope="col">#</th>
@@ -29,6 +29,9 @@ $role = $session->get('role');
                         <th scope="col">Tanggal Daftar</th>
                         <th scope="col">Terakhir Login</th>
                         <th scope="col">Is Active</th>
+                        <?php if ($role == 'admin') : ?>
+                            <th scope="col">Aksi</th>
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,6 +49,14 @@ $role = $session->get('role');
                             <td><?= $teller['tanggal_daftar']; ?></td>
                             <td><?= $teller['terakhir_login']; ?></td>
                             <td><?= $teller['is_active'] ? 'Aktif' : 'Nonaktif'; ?></td>
+                            <?php if ($role == 'admin') : ?>
+                                <td>
+                                    <a href="<?= base_url('teller/ubah/') . $teller['id']; ?>" class="btn btn-warning">Ubah</a>
+                                    <form method="POST" action="<?= base_url('teller/hapus/') . $teller['id']; ?>" style="display: inline">
+                                        <button class="btn btn-outline-danger" onclick="return confirm('Kamu yakin akan menghapus <?= $title . ' ' . $teller['nama_lengkap']; ?> ?');">Hapus</button>
+                                    </form>
+                                </td>
+                            <?php endif; ?>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

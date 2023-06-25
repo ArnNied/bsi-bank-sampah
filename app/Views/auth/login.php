@@ -10,7 +10,7 @@
             <form action="<?= base_url('auth/login') ?>" method="POST" class="mx-auto">
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
-                    <input type="text" id="username" name="username" placeholder="Username" class="form-control" required>
+                    <input type="text" id="username" name="username" placeholder="Username" class="form-control" autofocus required>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
