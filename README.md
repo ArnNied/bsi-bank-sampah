@@ -12,10 +12,11 @@ Bank Sampah adalah sebuah sistem penyimpanan sampah dengan cara kita setor sampa
 
 ## Instalasi
 
-1. Download atau clone repository ini
-2. Buka terminal atau cmd
-3. Masuk ke direktori project
-4. `composer update && composer install` untuk menginstall dependencies
-5. `php spark migrate && php spark db:seed MainSeeder` untuk membuat database dan mengisi data awal
-6. Jalankan server dengan `php spark serve`
-7. Buka browser dan masuk ke http://localhost:8080
+1. Konfigurasi database di `app/Config/Database.php`.
+2. Download atau clone repository ini.
+3. Buka terminal atau cmd di direktori project.
+4. `composer update` dan `composer install` untuk menginstall dependencies.
+5. `php spark migrate` untuk mengisi struktur database.
+6. `php spark db:seed MainSeeder` untuk mengisi database dengan data awal.
+7. Jalankan server dengan `php spark serve`.
+8. Buka browser dan masuk ke [http://localhost:8080](http://localhost:8080).
