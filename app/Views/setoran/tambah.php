@@ -43,8 +43,8 @@ $logged_in_user = $session->get('user');
                     <?php endif; ?>
                 </div>
                 <div class="mb-3">
-                    <label for="kategori_sampah" class="form-label">Kategori Sampah</label>
-                    <select id="kategori_sampah" name="kategori_sampah" class="form-select">
+                    <label for="id_kategori_sampah" class="form-label">Kategori Sampah</label>
+                    <select id="id_kategori_sampah" name="id_kategori_sampah" class="form-select">
                         <?php foreach ($kategori_sampah_list as $kategori) : ?>
                             <option value="<?= $kategori['id'] ?>"><?= $kategori['nama'] ?></option>
                         <?php endforeach; ?>
@@ -52,7 +52,7 @@ $logged_in_user = $session->get('user');
                 </div>
                 <div class="mb-3">
                     <label for="berat" class="form-label">Berat</label>
-                    <input type="number" id="berat" name="berat" placeholder="Berat)" class="form-control" required>
+                    <input type="number" id="berat" name="berat" placeholder="Berat" class="form-control" required>
                 </div>
                 <button class="btn btn-primary w-100">Buat Penarikan</button>
             </form>

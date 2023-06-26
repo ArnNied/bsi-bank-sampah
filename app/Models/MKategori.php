@@ -58,8 +58,8 @@ class MKategori extends Model
     {
         if (isset($data['data']['taksiran'])) {
             $data['data']['terakhir_diperbarui'] = date('Y-m-d H:i:s');
-
-            return $data;
         }
+
+        return $data;
     }
 }

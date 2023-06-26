@@ -75,6 +75,7 @@ class MSetoran extends Model
         if (isset($data['data']['nominal'])) {
             $data['data']['nominal'] = floor($data['data']['nominal']);
         }
+
         return $data;
     }
 }
