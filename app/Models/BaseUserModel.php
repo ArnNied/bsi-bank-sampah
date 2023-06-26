@@ -21,26 +21,4 @@ class BaseUserModel extends Model
 
         return $data;
     }
-
-    public function login($username, $password)
-    {
-        $user = $this->where('username', $username)->first();
-
-        if ($user) {
-            if (password_verify($password, $user['password'])) {
-                $this->update($user['id'], ['terakhir_login' => date('Y-m-d H:i:s')]);
-
-                return $user;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
-    public function get_by_username($username)
-    {
-        return $this->where('username', $username)->first();
-    }
 }
