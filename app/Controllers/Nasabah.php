@@ -16,7 +16,7 @@ class Nasabah extends BaseController
         $nasabah_list = $this->nasabah_model->findAll();
 
         $data = [
-            'title' => 'Daftar Nasabah',
+            'title' => 'List Nasabah',
             'nasabah_list' => $nasabah_list
         ];
 
@@ -276,14 +276,6 @@ class Nasabah extends BaseController
 
         // jika data tidak ditemukan, maka tampilkan error 404
         if (!$nasabah) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
-        }
-
-        // Jika role bukan admin dan bukan nasabah yang bersangkutan, maka
-        // tampilkan halaman error 403 (404)
-        if (
-            !in_array($this->user_role, ['admin', 'nasabah'])
-        ) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 

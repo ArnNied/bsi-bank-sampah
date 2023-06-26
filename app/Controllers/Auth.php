@@ -17,6 +17,7 @@ class Auth extends BaseController
             $data = [
                 'title' => 'Login',
             ];
+
             return view('auth/login', $data);
         } else if ($this->request->is('post')) {
             // PROSES LOGIN
@@ -31,13 +32,17 @@ class Auth extends BaseController
             // dan untuk menentukan role dari user tersebut
             // jika data ada di tabel admin, maka role = admin, dst
             $user = '';
+            $model = '';
 
             if ($role == 'admin') {
                 $user = $this->admin_model->where('username', $username)->first();
+                $model = $this->admin_model;
             } else if ($role == 'teller') {
                 $user = $this->teller_model->where('username', $username)->first();
+                $model = $this->teller_model;
             } else if ($role == 'nasabah') {
                 $user = $this->nasabah_model->where('username', $username)->first();
+                $model = $this->nasabah_model;
             } else {
                 $this->session->setFlashdata('error_list', ['role' => 'Role tidak ditemukan']);
 
@@ -50,6 +55,8 @@ class Auth extends BaseController
                     $this->session->set('role', $role);
 
                     $this->session->setFlashdata('sukses_list', ['login' => 'Anda berhasil login']);
+
+                    $model->update($user['id'], ['terakhir_login' => date('Y-m-d H:i:s')]);
 
                     return redirect()->to('');
                 } else {

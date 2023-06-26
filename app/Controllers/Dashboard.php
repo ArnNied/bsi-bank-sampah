@@ -57,14 +57,14 @@ class Dashboard extends BaseController
 
         $this->setoran_model->where('tanggal_setor >=', $satu_bulan_yang_lalu);
         $this->setoran_model->where('id_nasabah', $this->logged_in_user['id']);
-        $statistik['pendapatan'] = $this->setoran_model->selectSum('nominal')->first()['nominal'];
+        $statistik['pendapatan'] = $this->setoran_model->selectSum('nominal')->first()['nominal'] ?? 0;
 
         $this->setoran_model->where('tanggal_setor >=', $satu_bulan_yang_lalu);
         $this->setoran_model->where('id_nasabah', $this->logged_in_user['id']);
         $statistik['setoran'] = $this->setoran_model->countAllResults();
 
         $this->setoran_model->where('tanggal_setor >=', $satu_bulan_yang_lalu);
-        $statistik['berat'] = number_format($this->setoran_model->selectSum('berat')->first()['berat'], 2);
+        $statistik['berat'] = number_format($this->setoran_model->selectSum('berat')->first()['berat'] ?? 0, 2);
 
         $data = [
             'title' => 'Dashboard Nasabah',
@@ -157,7 +157,7 @@ class Dashboard extends BaseController
         $statistik['nasabah_baru'] = $this->nasabah_model->countAllResults();
 
         $this->setoran_model->where('tanggal_setor >=', $satu_bulan_yang_lalu);
-        $statistik['berat'] = number_format($this->setoran_model->selectSum('berat')->first()['berat'], 2);
+        $statistik['berat'] = number_format($this->setoran_model->selectSum('berat')->first()['berat'] ?? 0, 2);
 
         $data = [
             'title' => 'Dashboard Admin',

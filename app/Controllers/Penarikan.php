@@ -21,6 +21,7 @@ class Penarikan extends BaseController
         // tampilkan data ke view
 
         $this->penarikan_model->select('penarikan.*, teller.nama_lengkap as teller_nama_lengkap, nasabah.nama_lengkap as nasabah_nama_lengkap');
+
         $this->penarikan_model->join('teller', 'teller.id = penarikan.id_teller', 'left');
         $this->penarikan_model->join('nasabah', 'nasabah.id = penarikan.id_nasabah', 'left');
 
@@ -111,7 +112,14 @@ class Penarikan extends BaseController
                 throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
             }
 
-            if ($nasabah['saldo'] < $nominal || $nasabah['saldo'] - $nominal < 0) {
+            $teller = $this->teller_model->find($id_teller);
+
+            // Jika teller tidak ditemukan, maka tampilkan error 404
+            if (!$teller || $teller['is_active'] == 0) {
+                throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+            }
+
+            if ($nasabah['saldo'] < $nominal) {
                 // simpan pesan error ke flashdata
                 $this->session->setFlashdata('error_list', ['nominal' => 'Saldo tidak cukup']);
 

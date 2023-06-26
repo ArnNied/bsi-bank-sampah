@@ -9,7 +9,7 @@ $role = $session->get('role');
     <h3 class="card-header">
         Teller
         <?php if ($role == 'admin') : ?>
-            <a href="<?= base_url('nasabah/tambah') ?>" class="btn btn-sm btn-primary">Tambah</a>
+            <a href="<?= base_url('teller/tambah') ?>" class="btn btn-sm btn-primary">Tambah</a>
         <?php endif; ?>
     </h3>
     <div class="card-body">

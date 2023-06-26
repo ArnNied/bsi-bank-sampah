@@ -17,7 +17,6 @@ class Kategori extends BaseController
             'kategori_list' => $kategori_list,
         ];
 
-
         // tampilkan data ke view
         return view('kategori/index', $data);
     }

@@ -146,7 +146,7 @@ class MainSeeder extends Seeder
 
         for ($i = 0; $i < count($nasabah); $i++) {
 
-            $jumlah_setoran = $faker->numberBetween(0, 5);
+            $jumlah_setoran = $faker->numberBetween(0, 10);
             $jumlah_penarikan = $faker->numberBetween(0, $jumlah_setoran);
 
             for ($j = 0; $j < $jumlah_setoran; $j++) {

@@ -17,6 +17,7 @@ class Setoran extends BaseController
         // jika role teller atau user, maka tampilkan data setoran yang memiliki id teller atau user tersebut
 
         $this->setoran_model->select('setoran.*, teller.nama_lengkap as teller_nama_lengkap, nasabah.nama_lengkap as nasabah_nama_lengkap');
+
         $this->setoran_model->join('teller', 'teller.id = setoran.id_teller', 'left');
         $this->setoran_model->join('nasabah', 'nasabah.id = setoran.id_nasabah', 'left');
 
@@ -99,6 +100,13 @@ class Setoran extends BaseController
 
             // Jika nasabah tidak ditemukan, maka tampilkan error 404
             if (!$nasabah || $nasabah['is_active'] == 0) {
+                throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+            }
+
+            $teller = $this->teller_model->find($id_teller);
+
+            // Jika teller tidak ditemukan, maka tampilkan error 404
+            if (!$teller || $teller['is_active'] == 0) {
                 throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
             }
 
