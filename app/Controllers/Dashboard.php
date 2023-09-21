@@ -64,6 +64,7 @@ class Dashboard extends BaseController
         $statistik['setoran'] = $this->setoran_model->countAllResults();
 
         $this->setoran_model->where('tanggal_setor >=', $satu_bulan_yang_lalu);
+        $this->setoran_model->where('id_nasabah', $this->logged_in_user['id']);
         $statistik['berat'] = number_format($this->setoran_model->selectSum('berat')->first()['berat'] ?? 0, 2);
 
         $data = [
