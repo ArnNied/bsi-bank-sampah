@@ -71,6 +71,8 @@ $user = $session->get('user');
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="<?= base_url('setoran') ?>">List</a></li>
                             <li><a class="dropdown-item" href="<?= base_url('setoran/tambah') ?>">Tambah</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url('setoran/export/pdf') ?>">Export PDF</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url('setoran/export/excel') ?>">Export Excel</a></li>
                         </ul>
                     </li>
                 <?php elseif ($role == 'nasabah') : ?>
@@ -88,12 +90,21 @@ $user = $session->get('user');
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="<?= base_url('penarikan') ?>">List</a></li>
                             <li><a class="dropdown-item" href="<?= base_url('penarikan/tambah') ?>">Tambah</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url('penarikan/export/pdf') ?>">Export PDF</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url('penarikan/export/excel') ?>">Export Excel</a></li>
                         </ul>
                     </li>
                 <?php elseif ($role == 'nasabah') : ?>
                     <li class="nav-item">
                         <a class="nav-link" href="<?= base_url('penarikan') ?>">
                             Penarikan
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php if (in_array($role, ['admin', 'teller'])) : ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= base_url('export') ?>">
+                            Export
                         </a>
                     </li>
                 <?php endif; ?>

@@ -39,7 +39,7 @@ $routes->group('kategori', function ($routes) {
     $routes->get('', 'Kategori::index');
     $routes->match(['get', 'post'], 'tambah', 'Kategori::tambah');
     $routes->match(['get', 'post'], 'ubah/(:num)', 'Kategori::ubah/$1');
-    $routes->post('hapus/(:num)', 'Kategori::hapus/$1/$1');
+    $routes->post('hapus/(:num)', 'Kategori::hapus/$1');
 });
 $routes->group('nasabah', function ($routes) {
     $routes->get('', 'Nasabah::index');
@@ -59,11 +59,13 @@ $routes->group('setoran', function ($routes) {
     $routes->get('', 'Setoran::index');
     $routes->match(['get', 'post'], 'tambah', 'Setoran::tambah');
     $routes->post('hapus/(:num)', 'Setoran::hapus/$1');
+    $routes->get('export/(:alpha)', 'Setoran::export/$1');
 });
 $routes->group('penarikan', function ($routes) {
     $routes->get('', 'Penarikan::index');
     $routes->match(['get', 'post'], 'tambah', 'Penarikan::tambah');
     $routes->post('hapus/(:num)', 'Penarikan::hapus/$1');
+    $routes->get('export/(:alpha)', 'Penarikan::export/$1');
 });
 
 /*

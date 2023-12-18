@@ -161,4 +161,50 @@ class Setoran extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
     }
+
+    public function export(string $format)
+    {
+        if (!in_array($this->user_role, ['teller', 'admin']) || !in_array($format, ['pdf', 'excel'])) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        $kolom = [
+            'ID',
+            'Nasabah',
+            'Teller',
+            'Kategori Sampah',
+            'Berat',
+            'Taksiran (kg)',
+            'Total',
+            'Tanggal Setor',
+        ];
+
+        $db_kolom = [
+            'id',
+            'nasabah_nama_lengkap',
+            'teller_nama_lengkap',
+            'kategori_sampah',
+            'berat',
+            'taksiran',
+            'nominal',
+            'tanggal_setor',
+        ];
+
+        $this->setoran_model->select('setoran.*, teller.nama_lengkap as teller_nama_lengkap, nasabah.nama_lengkap as nasabah_nama_lengkap');
+        $this->setoran_model->join('teller', 'teller.id = setoran.id_teller', 'left');
+        $this->setoran_model->join('nasabah', 'nasabah.id = setoran.id_nasabah', 'left');
+        $this->setoran_model->orderBy('tanggal_setor', 'ASC');
+
+        $setoran_list = $this->setoran_model->findAll();
+
+        $data = [
+            'title' => 'List Setoran',
+            'kolom' => $kolom,
+            'db_kolom' => $db_kolom,
+            'format' => $format,
+            'data' => $setoran_list,
+        ];
+
+        return view('layout/export', $data);
+    }
 }

@@ -166,4 +166,44 @@ class Penarikan extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
     }
+
+    public function export(string $format)
+    {
+        if (!in_array($this->user_role, ['teller', 'admin']) || !in_array($format, ['pdf', 'excel'])) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        $kolom = [
+            'ID',
+            'Nama Nasabah',
+            'Nama Teller',
+            'Nominal',
+            'Tanggal Penarikan',
+        ];
+
+        $db_kolom = [
+            'id',
+            'nasabah_nama_lengkap',
+            'teller_nama_lengkap',
+            'nominal',
+            'tanggal_penarikan',
+        ];
+
+        $this->penarikan_model->select('penarikan.*, teller.nama_lengkap as teller_nama_lengkap, nasabah.nama_lengkap as nasabah_nama_lengkap');
+        $this->penarikan_model->join('teller', 'teller.id = penarikan.id_teller', 'left');
+        $this->penarikan_model->join('nasabah', 'nasabah.id = penarikan.id_nasabah', 'left');
+        $this->penarikan_model->orderBy('tanggal_penarikan', 'ASC');
+
+        $penarikan_list = $this->penarikan_model->findAll();
+
+        $data = [
+            'title' => 'List Penarikan',
+            'kolom' => $kolom,
+            'db_kolom' => $db_kolom,
+            'format' => $format,
+            'data' => $penarikan_list,
+        ];
+
+        return view('layout/export', $data);
+    }
 }
