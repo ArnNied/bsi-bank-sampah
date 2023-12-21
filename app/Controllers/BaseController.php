@@ -70,6 +70,7 @@ abstract class BaseController extends Controller
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
 
+        ini_set('display_errors', 1);
         date_default_timezone_set('Asia/Jakarta');
 
         // Preload any models, libraries, etc, here.

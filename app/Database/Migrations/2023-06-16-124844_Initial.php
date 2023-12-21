@@ -218,10 +218,13 @@ class Initial extends Migration
                 'constraint' => 11,
                 'null' => true,
             ],
-            'id_teller' => [
-                'type' => 'INT',
-                'constraint' => 11,
-                'null' => true,
+            'bank' => [
+                'type' => 'ENUM',
+                'constraint' => ['BRI', 'BCA', 'Mandiri', 'BNI', 'BTN', 'CIMB Niaga'],
+            ],
+            'nomor_rekening' => [
+                'type' => 'VARCHAR',
+                'constraint' => 255,
             ],
             'nominal' => [
                 'type' => 'INT',
@@ -234,7 +237,6 @@ class Initial extends Migration
         ]);
         $this->forge->addKey('id', true);
         $this->forge->addForeignKey('id_nasabah', 'nasabah', 'id', 'SET NULL', 'SET NULL');
-        $this->forge->addForeignKey('id_teller', 'teller', 'id', 'SET NULL', 'SET NULL');
         $this->forge->createTable('penarikan');
     }
 

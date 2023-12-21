@@ -21,6 +21,7 @@ class Dashboard extends BaseController
 
     public function dashboard_umum()
     {
+        // Tampilan dashboard umum
         $this->kategori_model->orderBy('terakhir_diperbarui', 'DESC');
         $kategori_list = $this->kategori_model->findAll();
 
@@ -34,21 +35,25 @@ class Dashboard extends BaseController
 
     public function dashboard_nasabah()
     {
+        // Tampilan dashboard nasabah
+
+        // Ambil data setoran yang dilakukan oleh nasabah tersebut
         $this->setoran_model->select('setoran.*, teller.nama_lengkap as teller_nama_lengkap');
         $this->setoran_model->join('teller', 'teller.id = setoran.id_teller');
         $this->setoran_model->orderBy('tanggal_setor', 'DESC');
         $this->setoran_model->where('id_nasabah', $this->logged_in_user['id']);
         $setoran_list = $this->setoran_model->findAll(5);
 
-        $this->penarikan_model->select('penarikan.*, teller.nama_lengkap as teller_nama_lengkap');
-        $this->penarikan_model->join('teller', 'teller.id = penarikan.id_teller');
+        // Ambil data penarikan yang dilakukan oleh nasabah tersebut
+        $this->penarikan_model->select('penarikan.*');
         $this->penarikan_model->orderBy('tanggal_penarikan', 'DESC');
         $this->penarikan_model->where('id_nasabah', $this->logged_in_user['id']);
-        $penarikan_list = $this->penarikan_model->where('id_nasabah', $this->logged_in_user['id'])->findAll(5);
+        $penarikan_list = $this->penarikan_model->findAll(5);
 
         $this->kategori_model->orderBy('terakhir_diperbarui', 'DESC');
         $kategori_list = $this->kategori_model->findAll(10);
 
+        // Membuat statistik pendapatan, setoran, dan berat sampah yang disetor
         $statistik = [];
 
         $satu_bulan_yang_lalu = Time::now()->subMonths(1);
@@ -80,19 +85,23 @@ class Dashboard extends BaseController
 
     public function dashboard_teller()
     {
+        // Tampilan dashboard teller
+
+        // Ambil data nasabah yang terdaftar, urutkan berdasarkan tanggal daftar
         $this->nasabah_model->orderBy('tanggal_daftar', 'DESC');
         $nasabah_list = $this->nasabah_model->findAll(5);
 
+        // Ambil data setoran yang dilakukan oleh teller tersebut
         $this->setoran_model->select('setoran.*, nasabah.nama_lengkap as nasabah_nama_lengkap');
         $this->setoran_model->join('nasabah', 'nasabah.id = setoran.id_nasabah');
         $this->setoran_model->orderBy('tanggal_setor', 'DESC');
         $this->setoran_model->where('id_teller', $this->logged_in_user['id']);
         $setoran_list = $this->setoran_model->findAll(5);
 
+        // Ambil data penarikan
         $this->penarikan_model->select('penarikan.*, nasabah.nama_lengkap as nasabah_nama_lengkap');
         $this->penarikan_model->join('nasabah', 'nasabah.id = penarikan.id_nasabah');
         $this->penarikan_model->orderBy('tanggal_penarikan', 'DESC');
-        $this->penarikan_model->where('id_teller', $this->logged_in_user['id']);
         $penarikan_list = $this->penarikan_model->findAll(5);
 
         $this->kategori_model->orderBy('terakhir_diperbarui', 'DESC');
@@ -105,10 +114,6 @@ class Dashboard extends BaseController
         $this->setoran_model->where('tanggal_setor >=', $satu_bulan_yang_lalu);
         $this->setoran_model->where('id_teller', $this->logged_in_user['id']);
         $statistik['setoran'] = $this->setoran_model->countAllResults();
-
-        $this->penarikan_model->where('tanggal_penarikan >=', $satu_bulan_yang_lalu);
-        $this->penarikan_model->where('id_teller', $this->logged_in_user['id']);
-        $statistik['penarikan'] = $this->penarikan_model->countAllResults();
 
         $data = [
             'title' => 'Dashboard Teller',
@@ -136,8 +141,7 @@ class Dashboard extends BaseController
         $this->setoran_model->orderBy('tanggal_setor', 'DESC');
         $setoran_list = $this->setoran_model->findAll(5);
 
-        $this->penarikan_model->select('penarikan.*, teller.nama_lengkap as teller_nama_lengkap, nasabah.nama_lengkap as nasabah_nama_lengkap');
-        $this->penarikan_model->join('teller', 'teller.id = penarikan.id_teller');
+        $this->penarikan_model->select('penarikan.*, nasabah.nama_lengkap as nasabah_nama_lengkap');
         $this->penarikan_model->join('nasabah', 'nasabah.id = penarikan.id_nasabah');
         $this->penarikan_model->orderBy('tanggal_penarikan', 'DESC');
         $penarikan_list = $this->penarikan_model->findAll(5);

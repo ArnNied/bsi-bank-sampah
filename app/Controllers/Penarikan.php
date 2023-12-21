@@ -20,17 +20,12 @@ class Penarikan extends BaseController
 
         // tampilkan data ke view
 
-        $this->penarikan_model->select('penarikan.*, teller.nama_lengkap as teller_nama_lengkap, nasabah.nama_lengkap as nasabah_nama_lengkap');
-
-        $this->penarikan_model->join('teller', 'teller.id = penarikan.id_teller', 'left');
+        $this->penarikan_model->select('penarikan.*, nasabah.nama_lengkap as nasabah_nama_lengkap');
         $this->penarikan_model->join('nasabah', 'nasabah.id = penarikan.id_nasabah', 'left');
-
         $this->penarikan_model->orderBy('tanggal_penarikan', 'DESC');
 
         if ($this->user_role == 'nasabah') {
             $penarikan_list = $this->penarikan_model->where('id_nasabah', $this->logged_in_user['id']);
-        } else if ($this->user_role == 'teller') {
-            $penarikan_list = $this->penarikan_model->where('id_teller', $this->logged_in_user['id']);
         }
 
         $penarikan_list = $this->penarikan_model->findAll();
@@ -45,26 +40,15 @@ class Penarikan extends BaseController
 
     public function tambah()
     {
-        if (!in_array($this->user_role, ['teller', 'admin'])) {
+        if (!in_array($this->user_role, ['nasabah'])) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
+        $bank_list = ['BRI', 'BCA', 'Mandiri', 'BNI', 'BTN', 'CIMB Niaga'];
 
         if ($this->request->is('get')) {
-            // tampilkan halaman form untuk menambah data penarikan baru
-            $this->nasabah_model->orderBy('nama_lengkap', 'ASC');
-            $nasabah_list = $this->nasabah_model->where('is_active', 1)->findAll();
-
-            $this->teller_model->orderBy('nama_lengkap', 'ASC');
-            $teller_list = $this->teller_model->where('is_active', 1)->findAll();
-
-            $this->kategori_model->orderBy('nama', 'ASC');
-            $kategori_sampah_list = $this->kategori_model->findAll();
-
             $data = [
                 'title' => 'Tambah Penarikan Baru',
-                'nasabah_list' => $nasabah_list,
-                'teller_list' => $teller_list,
-                'kategori_sampah_list' => $kategori_sampah_list,
+                'bank_list' => $bank_list,
             ];
 
             // tampilkan halaman form untuk menambah data penarikan baru
@@ -73,20 +57,21 @@ class Penarikan extends BaseController
             // PROSES TAMBAH DATA
 
             // Pengambilan data dari form
-            $id_nasabah = $this->request->getPost('id_nasabah');
-            $id_teller = $this->request->getPost('id_teller');
-            $nominal = $this->request->getPost('nominal');
+            $id_nasabah = $this->logged_in_user['id'];
+            $bank = $this->request->getPost('bank');
+            $nomor_rekening = $this->request->getPost('nomor_rekening');
+            $nominal = (int) $this->request->getPost('nominal');
 
             // validasi data
             $this->validateData(
                 [
-                    'id_nasabah' => $id_nasabah,
-                    'id_teller' => $id_teller,
+                    'bank' => $bank,
+                    'nomor_rekening' => $nomor_rekening,
                     'nominal' => $nominal,
                 ],
                 $this->setoran_model->getValidationRules(
                     [
-                        'only' => ['id_nasabah', 'id_teller', 'nominal']
+                        'only' => ['bank', 'nomor_rekening', 'nominal']
                     ]
                 ),
                 $this->setoran_model->getValidationMessages()
@@ -100,11 +85,6 @@ class Penarikan extends BaseController
                 return redirect()->back();
             }
 
-            // Telah terjadi manipulasi form
-            if ($this->user_role == 'teller' && $id_teller != $this->logged_in_user['id']) {
-                throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
-            }
-
             $nasabah = $this->nasabah_model->find($id_nasabah);
 
             // Jika nasabah tidak ditemukan, maka tampilkan error 404
@@ -112,16 +92,14 @@ class Penarikan extends BaseController
                 throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
             }
 
-            $teller = $this->teller_model->find($id_teller);
-
-            // Jika teller tidak ditemukan, maka tampilkan error 404
-            if (!$teller || $teller['is_active'] == 0) {
-                throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
-            }
-
             if ($nasabah['saldo'] < $nominal) {
                 // simpan pesan error ke flashdata
                 $this->session->setFlashdata('error_list', ['nominal' => 'Saldo tidak cukup']);
+
+                return redirect()->back();
+            } else if ($nominal < 10000) {
+                // simpan pesan error ke flashdata
+                $this->session->setFlashdata('error_list', ['nominal' => 'Nominal minimal Rp 10.000']);
 
                 return redirect()->back();
             }
@@ -132,7 +110,8 @@ class Penarikan extends BaseController
 
             $this->penarikan_model->insert([
                 'id_nasabah' => $id_nasabah,
-                'id_teller' => $id_teller,
+                'bank' => $bank,
+                'nomor_rekening' => $nomor_rekening,
                 'nominal' => $nominal,
             ]);
 
@@ -156,8 +135,14 @@ class Penarikan extends BaseController
                 // redirect ke halaman list penarikan
                 $this->db->transCommit();
 
+                // update session user saldo
+                $logged_in_user = $this->session->get('user');
+                $logged_in_user['saldo'] -= $nominal;
+
+                $this->session->set('user', $logged_in_user);
+
                 // simpan pesan sukses ke flashdata
-                $this->session->setFlashdata('sukses_list', ['penarikan' => 'Data berhasil ditambahkan']);
+                $this->session->setFlashdata('sukses_list', ['penarikan' => "Saldo anda sekarang " . $logged_in_user['saldo']]);
 
                 return redirect()->to('penarikan');
             }
@@ -169,29 +154,52 @@ class Penarikan extends BaseController
 
     public function export(string $format)
     {
-        if (!in_array($this->user_role, ['teller', 'admin']) || !in_array($format, ['pdf', 'excel'])) {
+        if (!$this->logged_in_user || !in_array($format, ['pdf', 'excel'])) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
-        $kolom = [
-            'ID',
-            'Nama Nasabah',
-            'Nama Teller',
-            'Nominal',
-            'Tanggal Penarikan',
-        ];
+        if ($this->user_role == 'nasabah') {
+            $kolom = [
+                'ID',
+                'Bank',
+                'Nomor Rekening',
+                'Nominal',
+                'Tanggal Penarikan',
+            ];
 
-        $db_kolom = [
-            'id',
-            'nasabah_nama_lengkap',
-            'teller_nama_lengkap',
-            'nominal',
-            'tanggal_penarikan',
-        ];
+            $db_kolom = [
+                'id',
+                'bank',
+                'nomor_rekening',
+                'nominal',
+                'tanggal_penarikan',
+            ];
+        } else {
+            $kolom = [
+                'ID',
+                'Nama Nasabah',
+                'Bank',
+                'Nomor Rekening',
+                'Nominal',
+                'Tanggal Penarikan',
+            ];
 
-        $this->penarikan_model->select('penarikan.*, teller.nama_lengkap as teller_nama_lengkap, nasabah.nama_lengkap as nasabah_nama_lengkap');
-        $this->penarikan_model->join('teller', 'teller.id = penarikan.id_teller', 'left');
-        $this->penarikan_model->join('nasabah', 'nasabah.id = penarikan.id_nasabah', 'left');
+            $db_kolom = [
+                'id',
+                'nasabah_nama_lengkap',
+                'bank',
+                'nomor_rekening',
+                'nominal',
+                'tanggal_penarikan',
+            ];
+        }
+
+        if ($this->user_role == 'nasabah') {
+            $this->penarikan_model->where('id_nasabah', $this->logged_in_user['id']);
+        } else {
+            $this->penarikan_model->select('penarikan.*, nasabah.nama_lengkap as nasabah_nama_lengkap');
+            $this->penarikan_model->join('nasabah', 'nasabah.id = penarikan.id_nasabah', 'left');
+        }
         $this->penarikan_model->orderBy('tanggal_penarikan', 'ASC');
 
         $penarikan_list = $this->penarikan_model->findAll();

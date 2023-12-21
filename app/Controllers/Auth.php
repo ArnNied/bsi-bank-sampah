@@ -8,12 +8,13 @@ class Auth extends BaseController
 {
     public function login()
     {
+        // Jika user sudah login, maka redirect ke halaman utama
         if ($this->logged_in_user) {
             return redirect()->to('');
         }
 
         if ($this->request->is('get')) {
-            // tampilkan halaman login
+            // Tampilkan UI jika http method GET
             $data = [
                 'title' => 'Login',
             ];
@@ -21,6 +22,7 @@ class Auth extends BaseController
             return view('auth/login', $data);
         } else if ($this->request->is('post')) {
             // PROSES LOGIN
+            // Proses login jika http method POST
 
             // ambil data dari form (username, password)
             $username = $this->request->getPost('username');
@@ -49,22 +51,29 @@ class Auth extends BaseController
                 return redirect()->back();
             }
 
+            // jika data ditemukan, maka cek password
             if ($user) {
                 if (password_verify($password, $user['password'])) {
+                    // jika password benar, maka set session user dan role
+
+                    // set session user dan role
                     $this->session->set('user', $user);
                     $this->session->set('role', $role);
 
                     $this->session->setFlashdata('sukses_list', ['login' => 'Anda berhasil login']);
 
+                    // update kolom "terakhir_login" pada tabel user
                     $model->update($user['id'], ['terakhir_login' => date('Y-m-d H:i:s')]);
 
                     return redirect()->to('');
                 } else {
+                    // jika password salah, maka tampilkan error
                     $this->session->setFlashdata('error_list', ['password' => 'Password salah']);
 
                     return redirect()->back();
                 }
             } else {
+                // jika data tidak ditemukan, maka tampilkan error
                 $this->session->setFlashdata('error_list', ['username' => 'Username tidak ditemukan']);
 
                 return redirect()->back();

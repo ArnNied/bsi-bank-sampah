@@ -164,35 +164,63 @@ class Setoran extends BaseController
 
     public function export(string $format)
     {
-        if (!in_array($this->user_role, ['teller', 'admin']) || !in_array($format, ['pdf', 'excel'])) {
+        if (!$this->logged_in_user || !in_array($format, ['pdf', 'excel'])) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
-        $kolom = [
-            'ID',
-            'Nasabah',
-            'Teller',
-            'Kategori Sampah',
-            'Berat',
-            'Taksiran (kg)',
-            'Total',
-            'Tanggal Setor',
-        ];
+        if ($this->user_role == 'nasabah') {
+            $kolom = [
+                'ID',
+                'Teller',
+                'Kategori Sampah',
+                'Berat',
+                'Taksiran (kg)',
+                'Total',
+                'Tanggal Setor',
+            ];
 
-        $db_kolom = [
-            'id',
-            'nasabah_nama_lengkap',
-            'teller_nama_lengkap',
-            'kategori_sampah',
-            'berat',
-            'taksiran',
-            'nominal',
-            'tanggal_setor',
-        ];
+            $db_kolom = [
+                'id',
+                'teller_nama_lengkap',
+                'kategori_sampah',
+                'berat',
+                'taksiran',
+                'nominal',
+                'tanggal_setor',
+            ];
+        } else {
+            $kolom = [
+                'ID',
+                'Nasabah',
+                'Teller',
+                'Kategori Sampah',
+                'Berat',
+                'Taksiran (kg)',
+                'Total',
+                'Tanggal Setor',
+            ];
 
-        $this->setoran_model->select('setoran.*, teller.nama_lengkap as teller_nama_lengkap, nasabah.nama_lengkap as nasabah_nama_lengkap');
+            $db_kolom = [
+                'id',
+                'nasabah_nama_lengkap',
+                'teller_nama_lengkap',
+                'kategori_sampah',
+                'berat',
+                'taksiran',
+                'nominal',
+                'tanggal_setor',
+            ];
+        }
+
+        if ($this->user_role == 'nasabah') {
+            $this->setoran_model->select('setoran.*, teller.nama_lengkap as teller_nama_lengkap');
+            $this->setoran_model->where('id_nasabah', $this->logged_in_user['id']);
+        } else {
+            $this->setoran_model->select('setoran.*, teller.nama_lengkap as teller_nama_lengkap, nasabah.nama_lengkap as nasabah_nama_lengkap');
+            $this->setoran_model->join('nasabah', 'nasabah.id = setoran.id_nasabah', 'left');
+        }
+
         $this->setoran_model->join('teller', 'teller.id = setoran.id_teller', 'left');
-        $this->setoran_model->join('nasabah', 'nasabah.id = setoran.id_nasabah', 'left');
         $this->setoran_model->orderBy('tanggal_setor', 'ASC');
 
         $setoran_list = $this->setoran_model->findAll();

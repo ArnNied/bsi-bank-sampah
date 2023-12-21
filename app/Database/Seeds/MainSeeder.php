@@ -18,7 +18,7 @@ class MainSeeder extends Seeder
         $admin = [
             [
                 'username' => 'admin',
-                'password' => password_hash('admin', PASSWORD_DEFAULT),
+                'password' => password_hash('asdasd', PASSWORD_DEFAULT),
                 'terakhir_login' => $faker->dateTimeThisYear('now', 'Asia/Jakarta')->format($date_format),
             ]
         ];
@@ -28,7 +28,7 @@ class MainSeeder extends Seeder
         $teller = [
             [
                 'username' => 'teller',
-                'password' => password_hash('teller', PASSWORD_DEFAULT),
+                'password' => password_hash('asdasd', PASSWORD_DEFAULT),
                 'nama_lengkap' => 'Teller',
                 'alamat' => $faker->address(),
                 'nomor_telepon' => $faker->phoneNumber(),
@@ -51,7 +51,7 @@ class MainSeeder extends Seeder
 
             $teller[] = [
                 'username' => $username,
-                'password' => password_hash($username, PASSWORD_DEFAULT),
+                'password' => password_hash('asdasd', PASSWORD_DEFAULT),
                 'nama_lengkap' => $nama_lengkap,
                 'alamat' => $alamat,
                 'nomor_telepon' => $nomor_telepon,
@@ -72,7 +72,7 @@ class MainSeeder extends Seeder
         $nasabah = [
             [
                 'username' => 'nasabah',
-                'password' => password_hash('nasabah', PASSWORD_DEFAULT),
+                'password' => password_hash('asdasd', PASSWORD_DEFAULT),
                 'nama_lengkap' => 'Nasabah',
                 'alamat' => $faker->address(),
                 'nomor_telepon' => $faker->phoneNumber(),
@@ -99,7 +99,7 @@ class MainSeeder extends Seeder
 
             $nasabah[] = [
                 'username' => $username,
-                'password' => password_hash($username, PASSWORD_DEFAULT),
+                'password' => password_hash('asdasd', PASSWORD_DEFAULT),
                 'nama_lengkap' => $nama_lengkap,
                 'alamat' => $alamat,
                 'nomor_telepon' => $nomor_telepon,
@@ -184,7 +184,9 @@ class MainSeeder extends Seeder
 
                 $penarikan[] = [
                     'id_nasabah' => $j + 1,
-                    'id_teller' => $index_teller + 1,
+                    'bank' => $faker->randomElement(['BRI', 'BCA', 'Mandiri', 'BNI', 'BTN', 'CIMB Niaga']),
+                    // Generate 10 - 16 digit number
+                    'nomor_rekening' => $faker->numberBetween(1000000000, 9999999999999999),
                     'nominal' => $nominal,
                     'tanggal_penarikan' => $tanggal_penarikan,
                 ];

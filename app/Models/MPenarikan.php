@@ -9,7 +9,8 @@ class MPenarikan extends Model
     protected $table            = 'penarikan';
     protected $allowedFields    = [
         'id_nasabah',
-        'id_teller',
+        'bank',
+        'nomor_rekening',
         'nominal',
         'tanggal_penarikan',
     ];
@@ -17,21 +18,27 @@ class MPenarikan extends Model
     // Validation
     protected $validationRules      = [
         'id_nasabah'        => 'required|is_natural_no_zero|greater_than[0]|is_not_unique[nasabah.id]',
-        'id_teller'         => 'required|is_natural_no_zero|greater_than[0]|is_not_unique[teller.id]',
+        'bank'              => 'required|in_list[BRI,BCA,Mandiri,BNI,BTN,CIMB Niaga]',
+        'nomor_rekening'    => 'required|numeric|min_length[10]|max_length[20]',
         'nominal'           => 'required|is_natural_no_zero|greater_than[0]',
     ];
     protected $validationMessages   = [
         'id_nasabah'        => [
             'required'              => 'Nasabah wajib diisi',
+            'is_natural_no_zero'    => 'Nasabah harus berupa angka bulat diatas 0',
             'numeric'               => 'Nasabah harus berupa angka',
             'greater_than'          => 'Nasabah harus lebih dari 0',
             'is_not_unique'         => 'Nasabah tidak ditemukan',
         ],
-        'id_teller'         => [
-            'required'              => 'Teller wajib diisi',
-            'numeric'               => 'Teller harus berupa angka',
-            'greater_than'          => 'Teller harus lebih dari 0',
-            'is_not_unique'         => 'Teller tidak ditemukan',
+        'bank'              => [
+            'required'              => 'Bank wajib diisi',
+            'in_list'               => 'Bank tidak valid',
+        ],
+        'nomor_rekening'    => [
+            'required'              => 'Nomor rekening wajib diisi',
+            'numeric'               => 'Nomor rekening harus berupa angka',
+            'min_length'            => 'Nomor rekening minimal 10 karakter',
+            'max_length'            => 'Nomor rekening maksimal 25 karakter',
         ],
         'nominal'           => [
             'required'              => 'Nominal wajib diisi',

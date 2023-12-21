@@ -63,54 +63,37 @@ $user = $session->get('user');
                         </ul>
                     </li>
                 <?php endif; ?>
-                <?php if (in_array($role, ['admin', 'teller'])) : ?>
+                <?php if ($user) : ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Setoran
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="<?= base_url('setoran') ?>">List</a></li>
-                            <li><a class="dropdown-item" href="<?= base_url('setoran/tambah') ?>">Tambah</a></li>
+                            <?php if (in_array($role, ['admin', 'teller'])) : ?>
+                                <li><a class="dropdown-item" href="<?= base_url('setoran/tambah') ?>">Tambah</a></li>
+                            <?php endif; ?>
                             <li><a class="dropdown-item" href="<?= base_url('setoran/export/pdf') ?>">Export PDF</a></li>
                             <li><a class="dropdown-item" href="<?= base_url('setoran/export/excel') ?>">Export Excel</a></li>
                         </ul>
                     </li>
-                <?php elseif ($role == 'nasabah') : ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('setoran') ?>">
-                            Setoran
-                        </a>
-                    </li>
-                <?php endif; ?>
-                <?php if (in_array($role, ['admin', 'teller'])) : ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Penarikan
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="<?= base_url('penarikan') ?>">List</a></li>
-                            <li><a class="dropdown-item" href="<?= base_url('penarikan/tambah') ?>">Tambah</a></li>
+                            <?php if (in_array($role, ['nasabah'])) : ?>
+                                <li><a class="dropdown-item" href="<?= base_url('penarikan/tambah') ?>">Tambah</a></li>
+                            <?php endif; ?>
                             <li><a class="dropdown-item" href="<?= base_url('penarikan/export/pdf') ?>">Export PDF</a></li>
                             <li><a class="dropdown-item" href="<?= base_url('penarikan/export/excel') ?>">Export Excel</a></li>
                         </ul>
                     </li>
-                <?php elseif ($role == 'nasabah') : ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('penarikan') ?>">
-                            Penarikan
-                        </a>
-                    </li>
-                <?php endif; ?>
-                <?php if (in_array($role, ['admin', 'teller'])) : ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('export') ?>">
-                            Export
-                        </a>
-                    </li>
                 <?php endif; ?>
             </ul>
             <div class="d-flex justify-content-end" role="search">
-                <?php if (!$role) : ?>
+                <?php if (!$user) : ?>
                     <a href="<?= base_url('auth/login') ?>" class="btn btn-light text-primary me-2" type="button">Login</a>
                 <?php else : ?>
                     <form action="<?= base_url('auth/logout') ?>" method="POST">

@@ -22,14 +22,6 @@ $user = $session->get('user');
                         <div class="col-md py-2">
                             <div class="row text-center">
                                 <h4 class="col-12">
-                                    <?= $statistik['penarikan'] ?>
-                                </h4>
-                                <h6 class="col-12 text-body-secondary">Total Penarikan yang Ditangani Bulan Ini</h6>
-                            </div>
-                        </div>
-                        <div class="col-md py-2">
-                            <div class="row text-center">
-                                <h4 class="col-12">
                                     <?= $statistik['setoran'] ?>
                                 </h4>
                                 <h6 class="col-12 text-body-secondary">Total Setoran yang Ditangani Bulan Ini</h6>

@@ -15,7 +15,7 @@ $user = $session->get('user');
         <div class="col-md-6">
             <div class="card">
                 <h2 class="col-md-12 text-center my-4">
-                    Halo, <?= $user['username'] ?>!
+                    Halo, <?= $user['nama_lengkap'] ?>!
                 </h2>
                 <div class="card-body">
                     <div class="row">
@@ -62,7 +62,6 @@ $user = $session->get('user');
         <div class="col-md-6">
             <?= $this->include('components/list/penarikan') ?>
         </div>
-
         <div class="col-md-12">
             <?= $this->include('components/list/nasabah') ?>
         </div>
