@@ -46,7 +46,7 @@ class Dashboard extends BaseController
 
         // Ambil data penarikan yang dilakukan oleh nasabah tersebut
         $this->penarikan_model->select('penarikan.*');
-        $this->penarikan_model->orderBy('tanggal_penarikan', 'DESC');
+        $this->penarikan_model->orderBy('id', 'DESC');
         $this->penarikan_model->where('id_nasabah', $this->logged_in_user['id']);
         $penarikan_list = $this->penarikan_model->findAll(5);
 
@@ -101,7 +101,7 @@ class Dashboard extends BaseController
         // Ambil data penarikan
         $this->penarikan_model->select('penarikan.*, nasabah.nama_lengkap as nasabah_nama_lengkap');
         $this->penarikan_model->join('nasabah', 'nasabah.id = penarikan.id_nasabah');
-        $this->penarikan_model->orderBy('tanggal_penarikan', 'DESC');
+        $this->penarikan_model->orderBy('id', 'DESC');
         $penarikan_list = $this->penarikan_model->findAll(5);
 
         $this->kategori_model->orderBy('terakhir_diperbarui', 'DESC');
@@ -143,7 +143,7 @@ class Dashboard extends BaseController
 
         $this->penarikan_model->select('penarikan.*, nasabah.nama_lengkap as nasabah_nama_lengkap');
         $this->penarikan_model->join('nasabah', 'nasabah.id = penarikan.id_nasabah');
-        $this->penarikan_model->orderBy('tanggal_penarikan', 'DESC');
+        $this->penarikan_model->orderBy('id', 'DESC');
         $penarikan_list = $this->penarikan_model->findAll(5);
 
         $kategori_list = $this->kategori_model->findAll(10);
@@ -155,7 +155,7 @@ class Dashboard extends BaseController
         $this->setoran_model->where('tanggal_setor >=', $satu_bulan_yang_lalu);
         $statistik['setoran'] = $this->setoran_model->countAllResults();
 
-        $this->penarikan_model->where('tanggal_penarikan >=', $satu_bulan_yang_lalu);
+        $this->penarikan_model->where('tanggal_diproses >=', $satu_bulan_yang_lalu);
         $statistik['penarikan'] = $this->penarikan_model->countAllResults();
 
         $this->nasabah_model->where('tanggal_daftar >=', $satu_bulan_yang_lalu);

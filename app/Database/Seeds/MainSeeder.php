@@ -145,7 +145,6 @@ class MainSeeder extends Seeder
         $penarikan = [];
 
         for ($i = 0; $i < count($nasabah); $i++) {
-
             $jumlah_setoran = $faker->numberBetween(0, 10);
             $jumlah_penarikan = $faker->numberBetween(0, $jumlah_setoran);
 
@@ -178,9 +177,13 @@ class MainSeeder extends Seeder
                 $index_teller = $faker->numberBetween(0, count($teller) - 1);
 
                 $nominal = $faker->numberBetween(0, $nasabah[$i]['saldo']);
-                $tanggal_penarikan = $faker->dateTimeThisYear('now', 'Asia/Jakarta')->format($date_format);
+                $tanggal_pengajuan = $faker->dateTimeThisYear('now', 'Asia/Jakarta')->format($date_format);
+                $tanggal_diproses = $tanggal_pengajuan;
 
-                $nasabah[$i]['saldo'] -= $nominal;
+                $status = $faker->randomElement(['pending', 'diterima', 'ditolak']);
+                if ($status != 'diterima') {
+                    $nasabah[$i]['saldo'] -= $nominal;
+                }
 
                 $penarikan[] = [
                     'id_nasabah' => $j + 1,
@@ -188,7 +191,9 @@ class MainSeeder extends Seeder
                     // Generate 10 - 16 digit number
                     'nomor_rekening' => $faker->numberBetween(1000000000, 9999999999999999),
                     'nominal' => $nominal,
-                    'tanggal_penarikan' => $tanggal_penarikan,
+                    'tanggal_pengajuan' => $tanggal_pengajuan,
+                    'tanggal_diproses' => $tanggal_diproses,
+                    'status' => $status
                 ];
             }
         }
@@ -197,7 +202,7 @@ class MainSeeder extends Seeder
             return $a['tanggal_setor'] <=> $b['tanggal_setor'];
         });
         uasort($penarikan, function ($a, $b) {
-            return $a['tanggal_penarikan'] <=> $b['tanggal_penarikan'];
+            return $a['tanggal_diproses'] <=> $b['tanggal_diproses'];
         });
 
         // Reset array index

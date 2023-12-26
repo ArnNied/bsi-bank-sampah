@@ -12,7 +12,9 @@ class MPenarikan extends Model
         'bank',
         'nomor_rekening',
         'nominal',
-        'tanggal_penarikan',
+        'tanggal_pengajuan',
+        'tanggal_diproses',
+        'status'
     ];
 
     // Validation
@@ -21,6 +23,7 @@ class MPenarikan extends Model
         'bank'              => 'required|in_list[BRI,BCA,Mandiri,BNI,BTN,CIMB Niaga]',
         'nomor_rekening'    => 'required|numeric|min_length[10]|max_length[20]',
         'nominal'           => 'required|is_natural_no_zero|greater_than[0]',
+        'status'            => 'required|in_list[pending,diterima,ditolak]'
     ];
     protected $validationMessages   = [
         'id_nasabah'        => [
@@ -45,14 +48,18 @@ class MPenarikan extends Model
             'is_natural_no_zero'    => 'Nominal harus berupa angka bulat diatas 0',
             'greater_than'          => 'Nominal minimal 0',
         ],
+        'status'            => [
+            'required'              => 'Status wajib diisi',
+            'in_list'               => 'Status tidak valid',
+        ],
     ];
 
     // Callbacks
-    protected $beforeInsert   = ['cb_insert_tanggal_penarikan'];
+    protected $beforeInsert   = ['cb_insert_tanggal_pengajuan'];
 
-    public function cb_insert_tanggal_penarikan(array $data)
+    public function cb_insert_tanggal_pengajuan(array $data)
     {
-        $data['data']['tanggal_penarikan'] = date('Y-m-d H:i:s');
+        $data['data']['tanggal_pengajuan'] = date('Y-m-d H:i:s');
 
         return $data;
     }

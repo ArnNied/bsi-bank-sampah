@@ -22,7 +22,7 @@ class Penarikan extends BaseController
 
         $this->penarikan_model->select('penarikan.*, nasabah.nama_lengkap as nasabah_nama_lengkap');
         $this->penarikan_model->join('nasabah', 'nasabah.id = penarikan.id_nasabah', 'left');
-        $this->penarikan_model->orderBy('tanggal_penarikan', 'DESC');
+        $this->penarikan_model->orderBy('id', 'DESC');
 
         if ($this->user_role == 'nasabah') {
             $penarikan_list = $this->penarikan_model->where('id_nasabah', $this->logged_in_user['id']);
@@ -113,15 +113,11 @@ class Penarikan extends BaseController
                 'bank' => $bank,
                 'nomor_rekening' => $nomor_rekening,
                 'nominal' => $nominal,
-            ]);
-
-            $this->nasabah_model->update($id_nasabah, [
-                'saldo' => $nasabah['saldo'] - $nominal,
+                'status' => 'pending',
             ]);
 
             $penarikan_errors = $this->penarikan_model->errors();
             $nasabah_errors = $this->nasabah_model->errors();
-
 
             if ($penarikan_errors || $nasabah_errors || $this->db->transStatus() === FALSE) {
                 $this->db->transRollback();
@@ -135,20 +131,91 @@ class Penarikan extends BaseController
                 // redirect ke halaman list penarikan
                 $this->db->transCommit();
 
-                // update session user saldo
-                $logged_in_user = $this->session->get('user');
-                $logged_in_user['saldo'] -= $nominal;
-
-                $this->session->set('user', $logged_in_user);
-
                 // simpan pesan sukses ke flashdata
-                $this->session->setFlashdata('sukses_list', ['penarikan' => "Saldo anda sekarang " . $logged_in_user['saldo']]);
+                $this->session->setFlashdata('sukses_list', ['penarikan' => 'Penarikan berhasil diajukan']);
 
                 return redirect()->to('penarikan');
             }
         } else {
             // jika bukan get atau post, maka tampilkan error 404
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+    }
+
+    public function proses(int $id)
+    {
+        if (!in_array($this->user_role, ['admin'])) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        $action = $this->request->getPost('action');
+
+        // validasi data
+        $this->validateData(
+            [
+                'status' => $action,
+            ],
+            $this->setoran_model->getValidationRules(
+                [
+                    'only' => ['status']
+                ]
+            ),
+            $this->setoran_model->getValidationMessages()
+        );
+
+        // jika data tidak valid, maka tampilkan error menggunakan flashdata
+        // dan redirect ke halaman form kembali
+        if ($errors = $this->validator->getErrors()) {
+            $this->session->setFlashdata('error_list', $errors);
+
+            return redirect()->back();
+        }
+
+        $this->penarikan_model->select('penarikan.*, nasabah.saldo as nasabah_saldo');
+        $this->penarikan_model->join('nasabah', 'nasabah.id = penarikan.id_nasabah', 'left');
+        $penarikan = $this->penarikan_model->find($id);
+
+        if (!$penarikan || $penarikan['status'] != 'pending') {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        if ($action == 'diterima' && $penarikan['nasabah_saldo'] < $penarikan['nominal']) {
+            // simpan pesan error ke flashdata
+            $this->session->setFlashdata('error_list', ['nominal' => 'Saldo tidak cukup']);
+
+            return redirect()->back();
+        }
+
+        $this->db->transBegin();
+
+        $this->penarikan_model->update($id, [
+            'status' => $action,
+            'tanggal_diproses' => date('Y-m-d H:i:s'),
+        ]);
+
+        if ($action == 'diterima') {
+            $this->nasabah_model->update($penarikan['id_nasabah'], [
+                'saldo' => $penarikan['nasabah_saldo'] - $penarikan['nominal'],
+            ]);
+        }
+
+        $penarikan_errors = $this->penarikan_model->errors();
+        $nasabah_errors = $this->nasabah_model->errors();
+
+        if ($penarikan_errors || $nasabah_errors || $this->db->transStatus() === FALSE) {
+            $this->db->transRollback();
+
+            $this->session->setFlashdata('error_list', $penarikan_errors);
+
+            return redirect()->back();
+        } else {
+            // redirect ke halaman list penarikan
+            $this->db->transCommit();
+
+            // simpan pesan sukses ke flashdata
+            $this->session->setFlashdata('sukses_list', ['penarikan' => "Penarikan berhasil " . $action]);
+
+            return redirect()->to('penarikan');
         }
     }
 
@@ -164,7 +231,9 @@ class Penarikan extends BaseController
                 'Bank',
                 'Nomor Rekening',
                 'Nominal',
-                'Tanggal Penarikan',
+                'Tanggal Pengajuan',
+                'Tanggal Diproses',
+                'Status'
             ];
 
             $db_kolom = [
@@ -172,7 +241,9 @@ class Penarikan extends BaseController
                 'bank',
                 'nomor_rekening',
                 'nominal',
-                'tanggal_penarikan',
+                'tanggal_pengajuan',
+                'tanggal_diproses',
+                'status',
             ];
         } else {
             $kolom = [
@@ -181,7 +252,9 @@ class Penarikan extends BaseController
                 'Bank',
                 'Nomor Rekening',
                 'Nominal',
-                'Tanggal Penarikan',
+                'Tanggal Pengajuan',
+                'Tanggal Diproses',
+                'Status'
             ];
 
             $db_kolom = [
@@ -190,7 +263,9 @@ class Penarikan extends BaseController
                 'bank',
                 'nomor_rekening',
                 'nominal',
-                'tanggal_penarikan',
+                'tanggal_pengajuan',
+                'tanggal_diproses',
+                'status',
             ];
         }
 
@@ -200,7 +275,7 @@ class Penarikan extends BaseController
             $this->penarikan_model->select('penarikan.*, nasabah.nama_lengkap as nasabah_nama_lengkap');
             $this->penarikan_model->join('nasabah', 'nasabah.id = penarikan.id_nasabah', 'left');
         }
-        $this->penarikan_model->orderBy('tanggal_penarikan', 'ASC');
+        $this->penarikan_model->orderBy('id', 'ASC');
 
         $penarikan_list = $this->penarikan_model->findAll();
 

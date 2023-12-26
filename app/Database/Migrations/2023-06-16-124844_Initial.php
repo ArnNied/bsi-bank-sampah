@@ -230,10 +230,19 @@ class Initial extends Migration
                 'type' => 'INT',
                 'constraint' => 11,
             ],
-            'tanggal_penarikan' => [
+            'tanggal_pengajuan' => [
                 'type' => 'DATETIME',
                 'null' => true,
             ],
+            'tanggal_diproses' => [
+                'type' => 'DATETIME',
+                'null' => true,
+            ],
+            'status' => [
+                'type' => 'ENUM',
+                'constraint' => ['pending', 'diterima', 'ditolak'],
+                'default' => 'pending',
+            ]
         ]);
         $this->forge->addKey('id', true);
         $this->forge->addForeignKey('id_nasabah', 'nasabah', 'id', 'SET NULL', 'SET NULL');

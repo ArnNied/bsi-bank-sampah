@@ -3,6 +3,12 @@
 $session = session();
 $role = $session->get('role');
 
+$status_color = [
+    'pending' => 'text-warning',
+    'diterima' => 'text-success',
+    'ditolak' => 'text-danger',
+]
+
 ?>
 
 <div class="card">
@@ -26,6 +32,8 @@ $role = $session->get('role');
                         <th scope="col">Nomor Rekening</th>
                         <th scope="col">Nominal</th>
                         <th scope="col">Tanggal Penarikan</th>
+                        <th scope="col">Tanggal Diproses</th>
+                        <th scope="col">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -39,7 +47,23 @@ $role = $session->get('role');
                             <td><?= $penarikan['bank'] ?></td>
                             <td><?= str_pad(substr($penarikan['nomor_rekening'], -4), strlen($penarikan['nomor_rekening']), "*", STR_PAD_LEFT) ?></td>
                             <td><?= number_to_currency($penarikan['nominal'], 'IDR', 'id_ID'); ?></td>
-                            <td><?= $penarikan['tanggal_penarikan']; ?></td>
+                            <td><?= $penarikan['tanggal_pengajuan']; ?></td>
+                            <?php if ($penarikan['status'] == 'pending') : ?>
+                                <td class="text-secondary">Belum Diproses</td>
+                            <?php else : ?>
+                                <td><?= $penarikan['tanggal_diproses']; ?></td>
+                            <?php endif; ?>
+                            <td>
+                                <?php if ($role === 'admin' && $penarikan['status'] === 'pending') : ?>
+                                    <form method="POST" action="<?= base_url('penarikan/proses/' . $penarikan['id']) ?>">
+                                        <button type="submit" name="action" value="diterima" class="btn btn-sm btn-success">Terima</button>
+                                        <button type="submit" name="action" value="ditolak" class="btn btn-sm btn-danger">Tolak</button>
+                                    </form>
+                                <?php else : ?>
+                                    <span class="text-capitalize <?= $status_color[$penarikan['status']] ?>"><?= $penarikan['status'] ?></span>
+                                <?php endif; ?>
+                            </td>
+
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

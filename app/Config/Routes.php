@@ -65,6 +65,7 @@ $routes->group('penarikan', function ($routes) {
     $routes->get('', 'Penarikan::index');
     $routes->match(['get', 'post'], 'tambah', 'Penarikan::tambah');
     $routes->post('hapus/(:num)', 'Penarikan::hapus/$1');
+    $routes->post('proses/(:num)', 'Penarikan::proses/$1');
     $routes->get('export/(:alpha)', 'Penarikan::export/$1');
 });
 
