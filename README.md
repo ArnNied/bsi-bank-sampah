@@ -13,7 +13,7 @@ Bank Sampah adalah sebuah sistem penyimpanan sampah dengan cara kita setor sampa
 ## Instalasi
 
 1. Konfigurasi database di `app/Config/Database.php`.
-2. Download atau clone repository ini.
+2. [Download](https://github.com/ArnNied/bsi-bank-sampah/archive/refs/heads/master.zip) atau [clone](https://github.com/ArnNied/bsi-bank-sampah) repository ini.
 3. Buka terminal atau cmd di direktori project.
 4. `composer update` dan `composer install` untuk menginstall dependencies.
 5. `php spark migrate` untuk mengisi struktur database.
